@@ -1,897 +1,813 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reparto CB: Manuale Operativo CB Interattivo</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
-        /* Stili personalizzati per Light Mode e Card View */
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f7f9fb; /* Sfondo chiaro principale */
-            color: #1f2937; /* Testo scuro */
-            transition: background-color 0.3s;
-        }
-        .main-container {
-            background-color: #ffffff;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-        }
-        
-        /* Stile per l'evidenziazione della ricerca */
-        .highlight {
-            background-color: #fcd34d; /* Amber-300 */
-            padding: 1px 3px;
-            border-radius: 4px;
-            font-weight: 700;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Diario Medicine</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F5F2ED;--surface:#FDFCFA;--s2:#F0EDE7;--s3:#E8E4DC;
+  --border:#DDD9D0;--border2:#C8C3B8;
+  --text:#1A1815;--t2:#6B665C;--t3:#9C9790;
+  --radius:10px;--rlg:16px;
+  --c1:#2D7A4F;--c1bg:#E8F5EE;--c1b:#A8D5BB; /* med1 green */
+  --c2:#1A5FA8;--c2bg:#E6F0FB;--c2b:#A0C4EE; /* med2 blue */
+  --amber:#A05E00;--amberbg:#FFF3DC;--amberb:#F0C870;
+  --red:#C0392B;--redbg:#FDECEA;--redb:#F0AAAA;
+  --purple:#6B3FA0;--purplebg:#F3EEFF;--purpleb:#C9A8F0;
+}
+[data-dark]{
+  --bg:#161410;--surface:#1F1D18;--s2:#28261F;--s3:#333028;
+  --border:#3A3830;--border2:#524F45;
+  --text:#F0EDE7;--t2:#A8A49C;--t3:#6B685E;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html{font-size:16px;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:80px;-webkit-text-size-adjust:100%;transition:background .25s,color .25s;}
 
-        /* Effetto di Glow Temporaneo per il risultato di ricerca */
-        .card.search-focus {
-            animation: pulse-red 1.5s ease-in-out;
-            box-shadow: 0 0 20px rgba(220, 38, 38, 0.7); /* Red Glow */
-        }
-        @keyframes pulse-red {
-            0% { transform: scale(1); box-shadow: 0 0 0 rgba(220, 38, 38, 0.7); }
-            50% { transform: scale(1.005); box-shadow: 0 0 25px rgba(220, 38, 38, 1); }
-            100% { transform: scale(1); box-shadow: 0 0 0 rgba(220, 38, 38, 0); }
-        }
-        
-        /* 5. Stili per il bottone/tab attivo (Rosso Scuro) */
-        .tab-button {
-            transition: all 0.3s;
-            white-space: nowrap;
-            padding: 0.75rem 1.25rem;
-            border-radius: 0.75rem; /* Rounded corners for the button */
-            margin-right: 0.5rem; /* Increased spacing between buttons */
-            color: #4b5563; /* Darker gray text */
-            font-weight: 600;
-            background-color: #e5e7eb; /* Light gray background when inactive */
-            border: 1px solid transparent;
-        }
-        .tab-button.active {
-            color: #ffffff; /* White text on red background */
-            background-color: #dc2626; /* Red 600 - Red background on click */
-            border-color: #b91c1c;
-            box-shadow: 0 2px 5px rgba(220, 38, 38, 0.5); /* Subtle shadow on active tab */
-        }
-        .tab-button:hover:not(.active) {
-            background-color: #d1d5db; /* Darker hover for inactive */
-            color: #1f2937;
-        }
+/* ── Header ── */
+.hdr{background:var(--text);color:var(--bg);padding:20px 18px 16px;display:flex;align-items:flex-end;justify-content:space-between;gap:12px;position:sticky;top:0;z-index:100;}
+.hdr h1{font-family:'Lora',serif;font-size:clamp(18px,5vw,24px);font-weight:600;letter-spacing:-.02em;line-height:1;}
+.hdr-sub{font-size:11px;color:#AAA8A0;margin-top:4px;font-family:'DM Mono',monospace;}
+.hdr-right{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.hbadge{font-family:'DM Mono',monospace;font-size:11px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);border-radius:20px;padding:5px 10px;color:#FDFCFA;white-space:nowrap;}
+.icon-btn{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);border-radius:8px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#FDFCFA;font-size:15px;touch-action:manipulation;flex-shrink:0;}
+.icon-btn:active{opacity:.7;}
 
-        /* 4. Nuovi Colori più Scuri e Professionali per le Card */
-        .editable-cell {
-            min-height: 2.5rem;
-            padding: 0.5rem;
-            border-radius: 0.5rem;
-            transition: background-color 0.2s;
-            cursor: pointer;
-            color: #1f2937; /* Testo scuro sulle celle chiare */
-        }
-        .editable-cell:focus {
-            outline: none;
-            box-shadow: 0 0 0 2px #dc2626; /* Bordo rosso focus */
-        }
-        
-        /* Rosso/Cremisi (Problema) - Bordo 800 (più scuro) */
-        .problem-bg { background-color: #fef2f2; } /* Red-50 */
-        .problem-color { border-left: 4px solid #991b1b; /* Red 800 */ } /* Bordo scuro */
-        
-        /* Giallo/Ambra (Descrizione) - Bordo 800 (più scuro) */
-        .description-bg { background-color: #fffdf7; } /* Amber-50 */
-        .description-color { border-left: 4px solid #b45309; /* Amber 800 */ } /* Bordo scuro */
+/* ── Container ── */
+.wrap{max-width:740px;margin:0 auto;padding:16px 14px 0;}
 
-        /* Verde/Smeraldo (Soluzione) - Bordo 800 (più scuro) */
-        .solution-bg { background-color: #ecfdf5; } /* Emerald-50 */
-        .solution-color { border-left: 4px solid #065f46; /* Emerald 800 */ } /* Bordo scuro */
+/* ── Card ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rlg);padding:18px 16px;margin-bottom:14px;}
+.card-title{font-family:'Lora',serif;font-size:15px;font-weight:600;color:var(--text);margin-bottom:16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
 
-        /* Stili per il watermark (Aggiornato per rosso più acceso e vibrazione) */
-        .watermark {
-            position: fixed;
-            bottom: 1rem;
-            right: 1rem;
-            font-size: 1rem;
-            color: rgba(220, 38, 38, 0.7); /* Red 600 semi-trasparente */
-            z-index: 1000;
-            user-select: none;
-            pointer-events: none;
-            font-weight: 800; /* Più grassetto */
-            text-transform: uppercase;
-            animation: vibrate-watermark 1.5s infinite; /* Aggiungi animazione di vibrazione */
-        }
-        /* Keyframes per l'animazione di vibrazione */
-        @keyframes vibrate-watermark {
-            0%, 100% { transform: translate(0, 0) rotate(0deg); }
-            25% { transform: translate(0.5px, 0.5px) rotate(0.1deg); }
-            50% { transform: translate(-0.5px, 0.5px) rotate(-0.1deg); }
-            75% { transform: translate(0.5px, -0.5px) rotate(0.1deg); }
-        }
+/* ── Badge ── */
+.badge{font-size:11px;font-family:'DM Mono',monospace;padding:3px 9px;border-radius:20px;font-weight:500;}
+.b1{background:var(--c1bg);color:var(--c1);border:1px solid var(--c1b);}
+.b2{background:var(--c2bg);color:var(--c2);border:1px solid var(--c2b);}
 
-        /* Stili per la stampa */
-        @media print {
-            body { background-color: white !important; }
-            .no-print { display: none !important; }
-            .print-area { margin-top: 0; }
-            .print-area .card {
-                border: 1px solid #ccc;
-                page-break-inside: avoid;
-                margin-bottom: 1rem;
-            }
-            /* Assicurati che le classi di colore non vengano ignorate in stampa */
-            .problem-color, .description-color, .solution-color {
-                -webkit-print-color-adjust: exact;
-                color-adjust: exact;
-            }
-        }
+/* ── Form ── */
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+.frow3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px;}
+.frow4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:8px;}
+.field label{display:block;font-size:11px;font-family:'DM Mono',monospace;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px;}
+.field input[type=text],.field input[type=date],.field input[type=time],.field input[type=number],.field select{width:100%;height:44px;padding:0 12px;border:1px solid var(--border);border-radius:var(--radius);background:var(--s2);color:var(--text);font-family:'DM Mono',monospace;font-size:14px;outline:none;transition:border-color .15s;appearance:none;-webkit-appearance:none;}
+.field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%239C9790'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:30px;}
+.field input:focus,.field select:focus{border-color:var(--border2);background:var(--surface);}
+.color-row{display:flex;gap:8px;margin-top:6px;}
+.color-pick{width:30px;height:30px;border-radius:50%;border:3px solid transparent;cursor:pointer;touch-action:manipulation;transition:border-color .15s;}
+.color-pick.sel{border-color:var(--text);}
 
-        /* Stile per il messaggio temporaneo */
-        #temp-message {
-            z-index: 1000;
-        }
+/* ── Buttons ── */
+.btn-primary{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;background:var(--text);color:var(--bg);border:none;border-radius:var(--radius);font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;cursor:pointer;touch-action:manipulation;margin-top:8px;}
+.btn-primary:active{opacity:.8;}
+.btn-sm{font-size:12px;font-family:'DM Mono',monospace;background:none;border:1px solid var(--border);border-radius:var(--radius);padding:6px 12px;cursor:pointer;color:var(--t2);touch-action:manipulation;}
+.btn-sm:active{opacity:.7;}
+.btn-danger{color:var(--red);border-color:var(--redb);}
 
-        /* Stile per la visualizzazione del conteggio risultati */
-        .search-container {
-            position: relative;
-        }
-        #search-results-count {
-            position: absolute;
-            top: 50%;
-            right: 1rem;
-            transform: translateY(-50%);
-            font-size: 0.875rem;
-            font-weight: 600;
-            color: #b91c1c; /* Red 700 */
-            padding: 0.25rem 0.5rem;
-            background-color: #fef2f2; /* Red 50 */
-            border-radius: 0.5rem;
-            pointer-events: none;
-            transition: opacity 0.3s;
-        }
+/* ── Stats ── */
+.stats-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:14px;}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 8px;text-align:center;}
+.stat-val{font-family:'Lora',serif;font-size:clamp(20px,5vw,26px);font-weight:600;color:var(--text);line-height:1;}
+.stat-lbl{font-size:10px;font-family:'DM Mono',monospace;color:var(--t3);text-transform:uppercase;letter-spacing:.04em;margin-top:4px;}
+.streak-fire{font-size:18px;line-height:1;}
 
-    </style>
+/* ── Progress ── */
+.prog-wrap{margin-bottom:14px;}
+.prog-bg{height:8px;background:var(--border);border-radius:10px;overflow:hidden;display:flex;gap:2px;}
+.prog-fill1{height:100%;background:var(--c1);transition:width .4s ease;}
+.prog-fill2{height:100%;background:var(--c2);transition:width .4s ease;}
+.prog-lbl{font-size:11px;font-family:'DM Mono',monospace;color:var(--t3);margin-top:5px;display:flex;justify-content:space-between;}
+
+/* ── Legend ── */
+.legend{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin-bottom:14px;}
+.leg-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--t2);}
+.leg-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.leg-sq{width:13px;height:13px;border-radius:3px;flex-shrink:0;}
+
+/* ── Day grid ── */
+.day-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;margin-bottom:14px;}
+.day-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px 4px;cursor:pointer;touch-action:manipulation;user-select:none;-webkit-user-select:none;}
+.day-card:active{opacity:.6;}
+.day-card.dc-today{border:2px solid var(--c2);}
+.day-card.dc-complete{background:var(--c1bg);border-color:var(--c1b);}
+.day-card.dc-partial{background:var(--amberbg);border-color:var(--amberb);}
+.day-card.dc-unlogged{background:var(--redbg);border-color:var(--redb);}
+.day-card.dc-sel{outline:2px solid var(--amber);outline-offset:1px;}
+.dc-num{font-size:10px;font-weight:500;color:var(--text);font-family:'DM Mono',monospace;text-align:center;margin-bottom:1px;}
+.dc-date{font-size:9px;color:var(--t3);text-align:center;margin-bottom:4px;}
+.dc-pips{display:flex;flex-wrap:wrap;justify-content:center;gap:2px;}
+.pip{width:7px;height:7px;border-radius:50%;background:var(--border);}
+
+/* ── Detail ── */
+.detail-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rlg);padding:18px 16px;margin-bottom:14px;animation:fadeUp .2s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.det-title{font-family:'Lora',serif;font-size:16px;font-weight:600;margin-bottom:3px;}
+.det-sub{font-size:11px;font-family:'DM Mono',monospace;color:var(--t3);margin-bottom:14px;}
+.notice{border-radius:8px;padding:9px 12px;font-size:12px;margin-bottom:14px;font-family:'DM Mono',monospace;border:1px solid;}
+.n-amber{background:var(--amberbg);border-color:var(--amberb);color:var(--amber);}
+.n-blue{background:var(--c2bg);border-color:var(--c2b);color:var(--c2);}
+.n-green{background:var(--c1bg);border-color:var(--c1b);color:var(--c1);}
+.med-sec{margin-bottom:18px;}
+.med-sec:last-child{margin-bottom:0;}
+.med-sec-hdr{display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-bottom:7px;border-bottom:1px solid var(--border);}
+.med-sec-hdr h3{font-size:11px;font-family:'DM Mono',monospace;text-transform:uppercase;letter-spacing:.07em;color:var(--t3);}
+.med-color-bar{width:4px;height:18px;border-radius:3px;flex-shrink:0;}
+
+/* ── Dose card ── */
+.dose-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:10px;}
+.dose-card{border:1px solid var(--border);border-radius:var(--radius);background:var(--s2);overflow:hidden;touch-action:manipulation;}
+.dose-top{padding:12px 10px 8px;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;user-select:none;-webkit-user-select:none;}
+.dose-top:active{opacity:.65;}
+.dose-time{font-family:'DM Mono',monospace;font-size:17px;font-weight:500;color:var(--text);}
+.dose-lbl{font-size:10px;color:var(--t3);text-align:center;}
+.dose-actions{display:flex;border-top:1px solid var(--border);}
+.dose-act{flex:1;padding:7px 4px;font-size:11px;font-family:'DM Mono',monospace;color:var(--t3);background:none;border:none;cursor:pointer;text-align:center;touch-action:manipulation;}
+.dose-act:active{background:var(--s3);}
+.dose-act.edit{border-right:1px solid var(--border);}
+.dose-act.del{color:var(--red);}
+/* taken states */
+.dose-card.tk1{background:var(--c1bg);border-color:var(--c1b);}
+.dose-card.tk1 .dose-time{color:var(--c1);}
+.dose-card.tk1 .dose-lbl{color:var(--c1);opacity:.8;}
+.dose-card.tk2{background:var(--c2bg);border-color:var(--c2b);}
+.dose-card.tk2 .dose-time{color:var(--c2);}
+.dose-card.tk2 .dose-lbl{color:var(--c2);opacity:.8;}
+
+/* ── Notes area ── */
+.notes-area{width:100%;min-height:70px;padding:10px 12px;border:1px solid var(--border);border-radius:var(--radius);background:var(--s2);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;resize:vertical;transition:border-color .15s;}
+.notes-area:focus{border-color:var(--border2);background:var(--surface);}
+
+/* ── Modal ── */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:flex;align-items:flex-end;justify-content:center;}
+.modal{background:var(--surface);border-radius:var(--rlg) var(--rlg) 0 0;padding:20px 18px 32px;width:100%;max-width:480px;animation:slideUp .25s ease;}
+@keyframes slideUp{from{transform:translateY(100%);}to{transform:translateY(0);}}
+.modal h2{font-family:'Lora',serif;font-size:16px;font-weight:600;margin-bottom:16px;}
+.modal-row{display:flex;gap:10px;margin-top:12px;}
+.modal-row .btn-primary{margin-top:0;}
+
+/* ── Tab bar ── */
+.tab-bar{display:flex;gap:4px;margin-bottom:14px;background:var(--s2);border-radius:var(--radius);padding:4px;}
+.tab{flex:1;padding:8px;text-align:center;font-size:13px;font-family:'DM Mono',monospace;border-radius:7px;cursor:pointer;color:var(--t2);touch-action:manipulation;}
+.tab.active{background:var(--surface);color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.08);}
+
+/* ── Footer ── */
+.footer{text-align:center;font-size:11px;font-family:'DM Mono',monospace;color:var(--t3);margin-top:24px;padding-bottom:8px;}
+
+/* ── Responsive ── */
+@media(max-width:480px){
+  .stats-grid{grid-template-columns:repeat(2,1fr);}
+  .frow{grid-template-columns:1fr;}
+  .frow4{grid-template-columns:repeat(2,1fr);}
+  .frow3{grid-template-columns:1fr 1fr;}
+  .dose-grid{grid-template-columns:repeat(2,1fr);}
+  .day-grid{gap:4px;}
+  .day-card{padding:7px 3px;}
+  .legend{gap:6px 10px;}
+}
+@media(max-width:360px){
+  .day-card{padding:6px 2px;}
+  .dc-num{font-size:9px;}
+  .dc-date{display:none;}
+}
+</style>
 </head>
 <body>
-    <script>
-        // Inizializza Lucide icons
-        document.addEventListener('DOMContentLoaded', () => {
-            lucide.createIcons();
-        });
-    </script>
-    
-    <div class="watermark no-print">
-        Made by Saad
+
+<!-- HEADER -->
+<div class="hdr">
+  <div>
+    <h1>💊 Diario Medicine</h1>
+    <div class="hdr-sub" id="hdr-sub">Piano di cura</div>
+  </div>
+  <div class="hdr-right">
+    <span class="hbadge" id="hbadge">Impostazione</span>
+    <button class="icon-btn" onclick="toggleDark()" title="Tema scuro/chiaro">🌙</button>
+  </div>
+</div>
+
+<div class="wrap">
+
+<!-- ══════════════════ SETUP ══════════════════ -->
+<div id="setup-sec">
+  <div class="card">
+    <div class="card-title">🗓 Trattamento</div>
+    <div class="frow">
+      <div class="field"><label>Data inizio</label><input type="date" id="s-start"></div>
+      <div class="field"><label>Durata (giorni)</label><input type="number" id="s-days" value="14" min="1" max="365" placeholder="es. 14"></div>
     </div>
+    <p style="font-size:12px;color:var(--t3);font-family:'DM Mono',monospace;margin-top:2px;">💡 Iniziato qualche giorno fa? Inserisci la vera data d'inizio — potrai registrare anche i giorni passati.</p>
+  </div>
 
-    <div class="container mx-auto p-4 md:p-8">
-
-        <header class="flex flex-col md:flex-row items-center justify-center md:justify-between mb-8">
-            <div class="flex items-center space-x-4 mb-4 md:mb-0">
-                <div class="h-12 w-12 bg-red-700 flex items-center justify-center rounded-xl shadow-lg border-2 border-red-900">
-                    <span class="text-white text-xs font-bold transform rotate-[-15deg]">IRCA</span>
-                </div>
-                <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 tracking-tight">
-                    Manuale Operativo CB <span class="text-red-700">Interattivo</span>
-                </h1>
-            </div>
-            
-            <div class="w-full md:w-1/2 search-container">
-                <input type="text" id="search-input" placeholder="Ricerca Avanzata (su tutti i reparti)..."
-                        class="w-full px-4 py-2 border border-gray-300 bg-white text-gray-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500 transition duration-200 shadow-lg pr-24"
-                        onkeyup="filterTable()">
-                <span id="search-results-count" class="opacity-0 hidden">0 Risultati</span>
-            </div>
-        </header>
-
-        <div class="main-container rounded-2xl p-4 md:p-6 shadow-xl border border-gray-200">
-
-            <div class="overflow-x-auto mb-6 border-b border-gray-200 no-print">
-                <div id="tabs-container" class="flex pb-3">
-                    </div>
-            </div>
-            
-            <div class="flex flex-col md:flex-row justify-end space-y-3 md:space-y-0 md:space-x-3 mb-6 no-print">
-                <button onclick="showPrintModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg shadow-lg transition duration-200 flex items-center justify-center">
-                    <i data-lucide="printer" class="w-5 h-5 mr-2"></i>
-                    Stampa (Configura)
-                </button>
-                <button onclick="showAddModal()" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg shadow-lg transition duration-200 flex items-center justify-center">
-                    <i data-lucide="plus-circle" class="w-5 h-5 mr-2"></i>
-                    Aggiungi Problema
-                </button>
-            </div>
-
-            <div id="data-list-container" class="space-y-5 print-area">
-                </div>
-
-            <div id="no-results-message" class="text-center p-8 text-gray-500 text-lg hidden">
-                Nessun risultato trovato in questa ricerca o il reparto è vuoto.
-            </div>
-        </div>
+  <div class="card">
+    <div class="card-title">Medicina 1 <span class="badge b1" id="s-b1">4× / giorno</span></div>
+    <div class="frow">
+      <div class="field"><label>Nome</label><input type="text" id="s-m1" placeholder="es. Amoxicillina 500mg"></div>
+      <div class="field">
+        <label>Dosi al giorno</label>
+        <select id="s-d1" onchange="updateTimesUI(1)">
+          <option value="1">1×</option><option value="2">2×</option><option value="3">3×</option>
+          <option value="4" selected>4×</option><option value="5">5×</option><option value="6">6×</option>
+        </select>
+      </div>
     </div>
-
-    <div id="add-modal" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 hidden p-4 no-print">
-        <div class="bg-white rounded-xl p-6 w-full max-w-lg shadow-2xl">
-            <h2 class="text-2xl font-bold mb-4 text-gray-800 border-b border-gray-200 pb-2">Aggiungi Nuovo Problema</h2>
-            
-            <label class="block mb-2 font-medium text-gray-700">Seleziona Reparto</label>
-            <select id="new-problem-department" class="w-full px-3 py-2 mb-4 bg-white border border-gray-300 rounded-lg text-gray-800 focus:ring-red-600 focus:border-red-600">
-                </select>
-
-            <label class="block mb-2 font-medium text-red-700">Problema 🔴</label>
-            <textarea id="new-problem" class="w-full px-3 py-2 mb-4 bg-gray-50 border border-red-300 rounded-lg text-gray-800 focus:ring-red-600 focus:border-red-600" rows="2" placeholder="Descrivi il problema (es. 'Motore in stallo')"></textarea>
-            
-            <label class="block mb-2 font-medium text-amber-700">Descrizione 🟡</label>
-            <textarea id="new-description" class="w-full px-3 py-2 mb-4 bg-gray-50 border border-amber-300 rounded-lg text-gray-800 focus:ring-amber-600 focus:border-amber-600" rows="3" placeholder="Dettagli aggiuntivi sul contesto e i sintomi"></textarea>
-            
-            <label class="block mb-2 font-medium text-green-700">Soluzione 🟢</label>
-            <textarea id="new-solution" class="w-full px-3 py-2 mb-6 bg-gray-50 border border-green-300 rounded-lg text-gray-800 focus:ring-green-600 focus:border-green-600" rows="3" placeholder="Passaggi per risolvere il problema (es. 'Spegnere e riavviare la macchina...')"></textarea>
-            
-            <div class="flex justify-end space-x-3">
-                <button onclick="closeAddModal()" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-lg transition duration-200">Annulla</button>
-                <button onclick="addNewProblem()" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200">Salva Problema</button>
-            </div>
-        </div>
+    <div class="field" style="margin-bottom:8px"><label>Colore</label>
+      <div class="color-row" id="cr1"></div>
     </div>
+    <div class="field"><label>Orari dose (24h)</label></div>
+    <div id="times1-ui"></div>
+  </div>
 
-    <div id="print-modal" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 hidden p-4 no-print">
-        <div class="bg-white rounded-xl p-6 w-full max-w-sm shadow-2xl">
-            <h2 class="text-2xl font-bold mb-4 text-gray-800 border-b border-gray-200 pb-2">Configura Stampa</h2>
-            <p class="text-gray-600 mb-4">Seleziona le colonne da includere nel documento stampato per il reparto <span id="print-modal-department-name" class="font-semibold text-red-600"></span>.</p>
-
-            <div class="space-y-3 mb-6">
-                <label class="flex items-center text-gray-700 font-medium cursor-pointer">
-                    <input type="checkbox" id="print-col-0" checked class="form-checkbox h-5 w-5 text-red-600 rounded focus:ring-red-600">
-                    <span class="ml-3">🔴 Problema</span>
-                </label>
-                <label class="flex items-center text-gray-700 font-medium cursor-pointer">
-                    <input type="checkbox" id="print-col-1" checked class="form-checkbox h-5 w-5 text-amber-600 rounded focus:ring-amber-600">
-                    <span class="ml-3">🟡 Descrizione</span>
-                </label>
-                <label class="flex items-center text-gray-700 font-medium cursor-pointer">
-                    <input type="checkbox" id="print-col-2" checked class="form-checkbox h-5 w-5 text-green-600 rounded focus:ring-green-600">
-                    <span class="ml-3">🟢 Soluzione</span>
-                </label>
-            </div>
-            
-            <div class="flex justify-end space-x-3">
-                <button onclick="closePrintModal()" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-lg transition duration-200">Annulla</button>
-                <button onclick="handlePrint()" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200">Avvia Stampa</button>
-            </div>
-        </div>
+  <div class="card">
+    <div class="card-title">Medicina 2 <span class="badge b2" id="s-b2">2× / giorno</span></div>
+    <div class="frow">
+      <div class="field"><label>Nome</label><input type="text" id="s-m2" placeholder="es. Ibuprofene 400mg"></div>
+      <div class="field">
+        <label>Dosi al giorno</label>
+        <select id="s-d2" onchange="updateTimesUI(2)">
+          <option value="1">1×</option><option value="2" selected>2×</option><option value="3">3×</option>
+          <option value="4">4×</option><option value="5">5×</option><option value="6">6×</option>
+        </select>
+      </div>
     </div>
-
-    <div id="confirm-modal" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 hidden p-4 no-print">
-        <div class="bg-white rounded-xl p-6 w-full max-w-sm shadow-2xl">
-            <h2 class="text-xl font-bold mb-4 text-red-600 border-b border-gray-200 pb-2">Conferma Operazione</h2>
-            <p id="confirm-modal-text" class="text-gray-700 mb-6">Sei sicuro di voler eliminare questo elemento?</p>
-            <div class="flex justify-end space-x-3">
-                <button onclick="resolveConfirm(false)" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-lg transition duration-200">Annulla</button>
-                <button onclick="resolveConfirm(true)" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200">Conferma</button>
-            </div>
-        </div>
+    <div class="field" style="margin-bottom:8px"><label>Colore</label>
+      <div class="color-row" id="cr2"></div>
     </div>
-
-
-    <div id="temp-message" class="fixed top-4 right-4 p-4 rounded-xl shadow-2xl text-white font-semibold transition-all duration-300 opacity-0 transform translate-y-2 hidden no-print" role="alert">
-        </div>
-
-    <script>
-        // Variabili globali per l'applicazione
-        let problemData = {};
-        let currentDepartment = '';
-        let departmentKeys = [];
-        
-        // Variabile globale per il resolver del modal di conferma
-        let confirmResolver = null;
-        let lastScrollTargetId = null; // ID dell'elemento da scrollare dopo la ricerca
-
-        // Dati iniziali aggiornati
-        const initialProblemData = {
-            'Polvere e Fusore': { name: 'Polvere e Fusore', headers: ['Problema', 'Descrizione', 'Soluzione'], rows: [
-                // Ho rimosso l'HTML all'interno per coerenza e facilità di editing
-                {id: Date.now() + 1, data: ['Blocco vibrovaio ⚙', 'Il vibrovaio si è bloccato a causa di un eccessivo accumulo di polvere. Ha interrotto il flusso e rallentato la produzione.', 'Pulizia approfondita del filtro e dei sensori. Verifica del tensionamento del nastro. ✅']},
-                {id: Date.now() + 2, data: ['Malfunzionamento aspirazione 💨', 'Il sistema di aspirazione della polvere non funziona correttamente, causando una dispersione nell\'ambiente.', 'Controllo e pulizia dei filtri. Verifica del motore dell\'aspiratore. 🛠️']},
-            ]},
-            'PIG': { name: 'PIG', headers: ['Problema', 'Descrizione', 'Soluzione'], rows: [
-                // Nota: Uso LaTeX per le formule matematiche/scientifiche per la miglior resa
-                {id: Date.now() + 3, data: ['PIG bloccato (Pulizia non corretta)', 'Quando parte la pulizia delle tubazioni, il PIG a $0.5$ bar rimane fermo e non pulisce la linea.', 'Impostare l\'aria a $1.5$ bar per liberare il PIG e pulire la tubazione (linea).']},
-                {id: Date.now() + 100, data: ['Perdita di pressione', 'La pressione nel circuito PIG scende troppo velocemente dopo l\'attivazione. ', 'Controllare le valvole di non ritorno e le guarnizioni nel percorso. Sostituire se necessario.']},
-            ]},
-            'Mixer': { name: 'Mixer', headers: ['Problema', 'Descrizione', 'Soluzione'], rows: [
-                {id: Date.now() + 4, data: ['Rumore anomalo dal motore', 'Si sente un forte rumore metallico o di sfregamento proveniente dal gruppo motore.', 'Spegnere immediatamente e verificare cuscinetti e ingranaggi. Allineare l\'asse.']},
-            ]},
-            'Conche': { name: 'Conche', headers: ['Problema', 'Descrizione', 'Soluzione'], rows: [
-                {id: Date.now() + 5, data: ['Eccessiva viscosità del cioccolato', 'Il prodotto fuso è troppo denso (viscosità $> 80$ Pa$\\cdot$s) e non scorre bene. Rischio di intasamento.', 'Aggiungere burro di cacao in piccole quantità e verificare la temperatura target di $50^\circ C$. 🌡️']},
-                {id: Date.now() + 101, data: ['Riscaldamento lento', 'La conca impiega troppo tempo a raggiungere la temperatura operativa. ', 'Controllare il corretto funzionamento dello scambiatore di calore e la valvola del vapore.'],}
-            ]},
-            'Preraffinatrice': { name: 'Preraffinatrice', headers: ['Problema', 'Descrizione', 'Soluzione'], rows: [
-                {id: Date.now() + 6, data: ['Vibrazioni eccessive', 'La macchina vibra troppo ad alta velocità, superando le soglie di sicurezza. ', 'Controllare il bilanciamento dinamico dei rulli. Verificare i supporti anti-vibrazione.']},
-            ]},
-            'Raffinatrice 1': { name: 'Raffinatrice 1', headers: ['Problema', 'Descrizione', 'Soluzione'], rows: [
-                {id: Date.now() + 7, data: ['Pressione rulli non uniforme', 'La pressione sui rulli è disomogenea, causando una granulometria (d90) inconsistente.', 'Ricalibrare il sistema di pressione pneumatica e pulire le teste idrauliche.',]},
-            ]},
-            'Raffinatrice 2': { name: 'Raffinatrice 2', headers: ['Problema', 'Descrizione', 'Soluzione'], rows: [
-                {id: Date.now() + 8, data: ['Surriscaldamento rulli', 'Rulli che raggiungono temperature eccessive (oltre i $45^\circ C$).', 'Aumentare il flusso d\'acqua di raffreddamento. Controllare i termostati di sicurezza.',]},
-            ]},
-            'CEPI Software': { name: 'CEPI Software', headers: ['Problema', 'Descrizione', 'Soluzione'], rows: [
-                {id: Date.now() + 9, data: ['Errore comunicazione PLC', 'Il sistema CEPI perde la comunicazione con il PLC di una macchina specifica (es. Mixer 3).', 'Riavviare il pannello operatore. Verificare il cavo Ethernet e lo stato del PLC.',]},
-            ]},
-            'Penta Software': { name: 'Penta Software', headers: ['Problema', 'Descrizione', 'Soluzione'], rows: [
-                {id: Date.now() + 10, data: ['Ricetta non salvata', 'La nuova versione della ricetta (es. V2.1) non viene salvata o è persa dopo il riavvio del sistema.', 'Eseguire un backup manuale. Verificare i permessi di scrittura sul server. Contattare IT.',]},
-            ]},
-            'Mercury Software': { name: 'Mercury Software', headers: ['Problema', 'Descrizione', 'Soluzione'], rows: [
-                {id: Date.now() + 11, data: ['Report giornaliero mancante', 'Il report di produzione non mostra i dati completi di una linea (es. Linea 1).', 'Controllare il registro degli errori del database. Assicurarsi che la connessione al database sia stabile.',]},
-            ]},
-        };
-
-        /**
-         * Formatta un timestamp (millisecondi) in data e ora.
-         * @param {number} timestamp - Il timestamp in millisecondi (il tuo ID riga).
-         * @returns {string} La data e ora formattata.
-         */
-        function formatTimestamp(timestamp) {
-            const date = new Date(timestamp);
-            const options = {
-                year: 'numeric', month: '2-digit', day: '2-digit',
-                hour: '2-digit', minute: '2-digit', second: '2-digit',
-                hour12: false // Formato 24 ore
-            };
-            // Esempio: 27/09/2025 14:30:00
-            return date.toLocaleString('it-IT', options).replace(',', ' | ');
-        }
-
-        /**
-         * Sostituisce alert() con un messaggio temporaneo.
-         * @param {string} message - Testo del messaggio.
-         * @param {string} type - 'success', 'error', o 'info'.
-         */
-        function showTempMessage(message, type) {
-            const msgElement = document.getElementById('temp-message');
-            msgElement.textContent = message;
-            
-            msgElement.className = 'fixed top-4 right-4 p-4 rounded-xl shadow-2xl text-white font-semibold transition-all duration-300 transform translate-y-2 no-print';
-            
-            let bgColor;
-            if (type === 'success') {
-                bgColor = 'bg-green-600';
-            } else if (type === 'error') {
-                bgColor = 'bg-red-600';
-            } else {
-                bgColor = 'bg-blue-600';
-            }
-
-            msgElement.classList.add(bgColor);
-            msgElement.classList.remove('hidden', 'opacity-0', 'translate-y-2');
-            msgElement.classList.add('opacity-100', 'translate-y-0');
-
-            setTimeout(() => {
-                msgElement.classList.remove('opacity-100', 'translate-y-0');
-                msgElement.classList.add('opacity-0', 'translate-y-2');
-                setTimeout(() => {
-                    msgElement.classList.add('hidden');
-                    msgElement.classList.remove(bgColor);
-                }, 300);
-            }, 3000);
-        }
-
-        // --- Gestione Modal di Conferma (Sostituzione di window.confirm) ---
-
-        /**
-         * Mostra il modal di conferma e restituisce una Promise che si risolve con true/false.
-         * @param {string} message - Messaggio da mostrare nel corpo del modal.
-         * @returns {Promise<boolean>}
-         */
-        function showConfirmModal(message) {
-            document.getElementById('confirm-modal-text').textContent = message;
-            document.getElementById('confirm-modal').classList.remove('hidden');
-
-            return new Promise((resolve) => {
-                confirmResolver = resolve;
-            });
-        }
-
-        /**
-         * Risolve la Promise del modal di conferma.
-         * @param {boolean} result - Risultato della conferma (true se confermato).
-         */
-        function resolveConfirm(result) {
-            document.getElementById('confirm-modal').classList.add('hidden');
-            if (confirmResolver) {
-                confirmResolver(result);
-                confirmResolver = null;
-            }
-        }
-
-
-        // --- Setup Iniziale e Persistenza ---
-        
-        /**
-         * Carica i dati da localStorage o usa i dati iniziali.
-         */
-        function loadData() {
-            // Nota: Uso ancora localStorage per semplicità, come nella versione precedente.
-            const storedData = localStorage.getItem('cbProblemSolutionsDataInterattivo');
-            if (storedData) {
-                try {
-                    const tempProblemData = JSON.parse(storedData);
-                    const filteredData = {};
-                    Object.keys(initialProblemData).forEach(key => {
-                        if (tempProblemData[key]) {
-                            // Mantiene i dati salvati se il reparto esiste
-                            // Assicura che i dati salvati abbiano sempre l'intestazione corretta
-                            filteredData[key] = { ...initialProblemData[key], rows: tempProblemData[key].rows };
-                        } else {
-                            // Usa i dati iniziali se il reparto non è salvato (es. nuovo reparto)
-                            filteredData[key] = initialProblemData[key];
-                        }
-                    });
-                    problemData = filteredData;
-
-                } catch (e) {
-                    console.error("Errore nel parsing dei dati, utilizzo i dati iniziali.", e);
-                    problemData = initialProblemData;
-                }
-            } else {
-                problemData = initialProblemData;
-            }
-            departmentKeys = Object.keys(problemData);
-        }
-
-        /**
-         * Salva i dati attuali in localStorage.
-         */
-        function saveData() {
-            localStorage.setItem('cbProblemSolutionsDataInterattivo', JSON.stringify(problemData));
-            showTempMessage('Dati salvati correttamente!', 'success');
-        }
-
-        // --- Funzioni di Interfaccia Utente e Logica ---
-        
-        /**
-         * Genera i bottoni delle schede (tabs).
-         */
-        function renderTabs() {
-            const tabsContainer = document.getElementById('tabs-container');
-            tabsContainer.innerHTML = '';
-            departmentKeys.forEach(key => {
-                const button = document.createElement('button');
-                button.textContent = problemData[key].name;
-                button.dataset.department = key;
-                button.className = 'tab-button flex-shrink-0';
-                button.onclick = () => switchDepartment(key);
-                tabsContainer.appendChild(button);
-            });
-        }
-
-        /**
-         * Cambia il reparto attivo e aggiorna la lista.
-         * @param {string} departmentKey - Chiave del reparto da visualizzare.
-         * @param {string} [highlightKeyword=''] - Keyword da evidenziare.
-         * @param {number|null} [scrollToId=null] - ID della riga da scorrere (per la ricerca).
-         */
-        function switchDepartment(departmentKey, highlightKeyword = '', scrollToId = null) {
-            currentDepartment = departmentKey;
-            lastScrollTargetId = scrollToId; // Imposta l'ID per lo scroll
-
-            // Aggiorna lo stato dei bottoni
-            document.querySelectorAll('.tab-button').forEach(btn => {
-                btn.dataset.department === departmentKey ? btn.classList.add('active') : btn.classList.remove('active');
-            });
-
-            // Renderizza la lista dei problemi con l'eventuale evidenziazione e scroll
-            const currentData = problemData[departmentKey];
-            if (currentData) {
-                renderDataList(currentData.rows, [true, true, true], highlightKeyword, false);
-            } else {
-                // Gestione caso in cui la chiave non è valida
-                document.getElementById('data-list-container').innerHTML = '';
-                document.getElementById('no-results-message').classList.remove('hidden');
-            }
-            
-            // Pulisce il contatore dei risultati quando si cambia tab manualmente
-            if (!highlightKeyword) {
-                document.getElementById('search-results-count').classList.add('opacity-0', 'hidden');
-            }
-        }
-
-        /**
-         * Sostituisce la keyword di ricerca nel testo con la stessa racchiusa in un tag <mark>.
-         * @param {string} text - Il testo completo della cella.
-         * @param {string} keyword - La keyword da evidenziare.
-         * @returns {string} Il testo con la keyword evidenziata.
-         */
-        function highlightText(text, keyword) {
-            if (!keyword) return text;
-
-            // Assicurati che il testo non sia nullo
-            if (typeof text !== 'string') text = String(text);
-
-            const escapedKeyword = keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-            const regex = new RegExp(`(${escapedKeyword})`, 'gi');
-            
-            // Sostituisce tutte le occorrenze con la stringa avvolta in <mark class="highlight">
-            return text.replace(regex, '<mark class="highlight">$1</mark>');
-        }
-
-
-        /**
-         * Genera la lista dei problemi/soluzioni in formato card.
-         * @param {Array<Object>} results - Le righe di dati da visualizzare. Può contenere oggetti riga ({id, data}) o oggetti strutturati ({departmentName, departmentKey, row}).
-         * @param {Array<boolean>} [colsToDisplay] - Array booleano per la stampa (opzionale).
-         * @param {string} [highlightKeyword=''] - Keyword da evidenziare.
-         * @param {boolean} [isGlobalSearch=false] - Se true, i risultati sono raggruppati per reparto.
-         */
-        function renderDataList(results, colsToDisplay = [true, true, true], highlightKeyword = '', isGlobalSearch = false) {
-            const listContainer = document.getElementById('data-list-container');
-            const noResults = document.getElementById('no-results-message');
-            listContainer.innerHTML = '';
-
-            if (results.length === 0) {
-                if (!document.body.classList.contains('printing')) {
-                    noResults.classList.remove('hidden');
-                }
-                return;
-            }
-
-            noResults.classList.add('hidden');
-            
-            let currentDeptName = null;
-            let targetCardElement = null;
-
-            results.forEach((item) => {
-                const row = isGlobalSearch ? item.row : item; // Estrai l'oggetto riga
-                const departmentName = isGlobalSearch ? item.departmentName : problemData[currentDepartment].name;
-                const departmentKey = isGlobalSearch ? item.departmentKey : currentDepartment;
-
-                // Aggiunge intestazione reparto se in ricerca globale e il reparto cambia
-                if (isGlobalSearch && departmentName !== currentDeptName) {
-                    const header = document.createElement('h2');
-                    header.className = 'text-2xl font-bold text-gray-700 border-b-2 border-red-500 pb-2 mt-6 mb-4 pt-4';
-                    header.innerHTML = `<span class="text-red-700"><i data-lucide="building" class="inline-block w-6 h-6 mr-2"></i> Reparto: ${departmentName}</span>`;
-                    listContainer.appendChild(header);
-                    currentDeptName = departmentName;
-                }
-
-                // Inizio Logica Rendering Card
-                const card = document.createElement('div');
-                card.id = `row-${row.id}`; // Aggiunge ID per lo scroll
-                card.className = 'card bg-white rounded-xl p-4 md:p-6 shadow-md border border-gray-100 hover:border-red-300 transition duration-200';
-                card.dataset.id = row.id;
-
-                // Identifica la card target per l'effetto di scroll e glow
-                if (lastScrollTargetId && Number(row.id) === Number(lastScrollTargetId)) {
-                    targetCardElement = card;
-                }
-
-                const cellColors = [
-                    { label: 'Problema', icon: '🔴', color: 'text-red-800', bg: 'problem-bg', cellClass: 'problem-color' },
-                    { label: 'Descrizione', icon: '🟡', color: 'text-amber-800', bg: 'description-bg', cellClass: 'description-color' },
-                    { label: 'Soluzione', icon: '🟢', color: 'text-green-800', bg: 'solution-bg', cellClass: 'solution-color' }
-                ];
-
-                let visibleCols = 0;
-                let gridContent = '';
-                
-                row.data.forEach((cellData, colIndex) => {
-                    if (colsToDisplay[colIndex]) {
-                        visibleCols++;
-                        const info = cellColors[colIndex];
-                        // Disabilita l'editing se in stampa o se in ricerca globale
-                        const contenteditable = document.body.classList.contains('printing') || isGlobalSearch ? 'false' : 'true';
-
-                        // Aggiunge la classe 'highlight' al contenuto del testo della cella
-                        const highlightedContent = highlightText(cellData, highlightKeyword);
-
-                        gridContent += `
-                            <div class="p-3 rounded-lg ${info.bg} ${info.cellClass}">
-                                <div class="font-bold mb-1 ${info.color} text-sm">${info.icon} ${info.label}</div>
-                                <div id="cell-${row.id}-${colIndex}"
-                                     class="editable-cell text-base min-h-[2.5rem]"
-                                     contenteditable="${contenteditable}"
-                                     onblur="saveCell(this, ${row.id}, ${colIndex}, '${departmentKey}')"
-                                >
-                                    ${highlightedContent}
-                                </div>
-                            </div>
-                        `;
-                    }
-                });
-
-                // Calcola la griglia dinamica (colonne)
-                let gridClass = '';
-                if (visibleCols === 3) gridClass = 'grid-cols-1 md:grid-cols-3';
-                else if (visibleCols === 2) gridClass = 'grid-cols-1 md:grid-cols-2';
-                else if (visibleCols === 1) gridClass = 'grid-cols-1';
-
-                // Se in ricerca globale, aggiunge il tag del reparto in alto
-                let globalSearchTag = isGlobalSearch ? `<div class="text-sm font-semibold text-red-600 mb-2 no-print"><i data-lucide="map-pin" class="inline w-4 h-4 mr-1"></i> Reparto: ${departmentName}</div>` : '';
-
-
-                card.innerHTML = `
-                    ${globalSearchTag}
-                    <div class="flex justify-between items-start mb-3 border-b pb-2">
-                        <div class="text-xs font-mono text-gray-500 bg-gray-100 px-3 py-1 rounded-full shadow-inner">
-                            Creato: ${formatTimestamp(row.id)}
-                        </div>
-                        <div class="flex space-x-2 no-print">
-                            </div>
-                    </div>
-                    <div class="grid ${gridClass} gap-4">
-                        ${gridContent}
-                    </div>
-                `;
-                
-                listContainer.appendChild(card);
-            });
-
-            // Dopo aver appeso tutti gli elementi, inizializza le icone
-            lucide.createIcons();
-
-            // Logica di Scroll e Glow (solo se non siamo in stampa e c'è un target)
-            if (targetCardElement && !document.body.classList.contains('printing')) {
-                // Scrolla alla card
-                targetCardElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                
-                // Aggiunge la classe per il glow, e la rimuove dopo l'animazione
-                targetCardElement.classList.add('search-focus');
-                setTimeout(() => {
-                    targetCardElement.classList.remove('search-focus');
-                    lastScrollTargetId = null; // Resetta dopo l'uso
-                }, 1500); 
-            }
-        }
-
-        /**
-         * Esegue la ricerca globale, filtra i risultati e aggiorna la visualizzazione.
-         * Logica aggiornata per supportare il tuo requisito di navigazione.
-         */
-        function filterTable() {
-            const searchInput = document.getElementById('search-input');
-            const keyword = searchInput.value.toLowerCase().trim();
-            const resultsCountSpan = document.getElementById('search-results-count');
-
-            if (!keyword) {
-                // Se la ricerca è vuota, torna al reparto corrente senza evidenziazione
-                switchDepartment(currentDepartment);
-                resultsCountSpan.classList.add('opacity-0', 'hidden');
-                return;
-            }
-
-            let globalSearchResults = [];
-
-            // Esegui la ricerca su tutti i reparti
-            departmentKeys.forEach(departmentKey => {
-                const departmentData = problemData[departmentKey];
-                
-                departmentData.rows.forEach(row => {
-                    // Controlla ogni cella (Problema, Descrizione, Soluzione)
-                    const found = row.data.some(cellData => 
-                        String(cellData).toLowerCase().includes(keyword)
-                    );
-
-                    if (found) {
-                        globalSearchResults.push({
-                            departmentName: departmentData.name,
-                            departmentKey: departmentKey,
-                            row: row
-                        });
-                    }
-                });
-            });
-
-            // Logica di Navigazione e Selezione (il tuo requisito)
-            if (globalSearchResults.length > 0) {
-                // Ottieni il primo risultato trovato
-                const firstResult = globalSearchResults[0];
-
-                // 1. Aggiorna il contatore dei risultati
-                resultsCountSpan.textContent = `${globalSearchResults.length} Risultati`;
-                resultsCountSpan.classList.remove('opacity-0', 'hidden');
-                resultsCountSpan.classList.add('opacity-100');
-
-                // 2. Naviga al reparto del primo risultato, evidenzia la keyword e scrolla
-                // Se il reparto è già quello corretto, usa renderDataList direttamente per evitare il flicker
-                if (firstResult.departmentKey === currentDepartment) {
-                     renderDataList(problemData[currentDepartment].rows, [true, true, true], keyword, false);
-                     // Scrolla e fa il glow solo sulla riga target
-                     const targetCard = document.getElementById(`row-${firstResult.row.id}`);
-                     if (targetCard) {
-                        targetCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                        targetCard.classList.add('search-focus');
-                        setTimeout(() => targetCard.classList.remove('search-focus'), 1500);
-                     }
-
-                } else {
-                    // Se è un reparto diverso, usa switchDepartment che farà il lavoro di cambio tab, rendering, scroll e glow
-                    // NOTA: Poiché switchDepartment chiama renderDataList, è importante passare il keyword e l'ID
-                    switchDepartment(firstResult.departmentKey, keyword, firstResult.row.id);
-                }
-
-            } else {
-                // Nessun risultato: Mostra il messaggio "Nessun risultato trovato" nel reparto corrente
-                renderDataList([], [true, true, true], '', false);
-                resultsCountSpan.textContent = `0 Risultati`;
-                resultsCountSpan.classList.remove('hidden');
-                resultsCountSpan.classList.add('opacity-100');
-            }
-        }
-        
-        // --- Funzioni di Modifica Dati (Mantenute/Aggiornate) ---
-
-        /**
-         * Salva la cella modificata.
-         */
-        function saveCell(element, rowId, colIndex, departmentKey) {
-            const newValue = element.innerHTML.replace(/<mark class="highlight">|<\/mark>/gi, '').trim(); // Rimuovi highlight prima di salvare
-
-            const department = problemData[departmentKey];
-            if (!department) return;
-
-            const rowIndex = department.rows.findIndex(row => row.id === rowId);
-            if (rowIndex !== -1) {
-                // Assicura che l'array data sia abbastanza grande
-                while (department.rows[rowIndex].data.length <= colIndex) {
-                    department.rows[rowIndex].data.push('');
-                }
-                department.rows[rowIndex].data[colIndex] = newValue;
-                saveData();
-            } else {
-                showTempMessage('Errore: Riga non trovata!', 'error');
-            }
-        }
-
-        /**
-         * Aggiunge una nuova riga (problema/soluzione).
-         */
-        function addNewProblem() {
-            const departmentKey = document.getElementById('new-problem-department').value;
-            const problem = document.getElementById('new-problem').value.trim();
-            const description = document.getElementById('new-description').value.trim();
-            const solution = document.getElementById('new-solution').value.trim();
-
-            if (!problem || !solution || !departmentKey) {
-                showTempMessage('Problema e Soluzione non possono essere vuoti.', 'error');
-                return;
-            }
-
-            const newId = Date.now(); // Utilizza il timestamp come ID unico
-            const newRow = {
-                id: newId,
-                data: [problem, description, solution]
-            };
-
-            problemData[departmentKey].rows.unshift(newRow); // Aggiunge in cima
-            saveData();
-            closeAddModal();
-            switchDepartment(departmentKey); // Torna al reparto con il nuovo elemento in cima
-        }
-
-        /**
-         * ELIMINATA: Funzione per eliminare una riga.
-         * Poiché hai chiesto di rimuovere il pulsante, questa funzione non è più chiamata.
-         * Mantenere la funzione di eliminazione (o un segnaposto) potrebbe essere utile per la manutenzione futura:
-         * * async function deleteRow(rowId, departmentKey) {
-         * const confirmed = await showConfirmModal('Sei sicuro di voler eliminare questo problema/soluzione? Questa operazione è irreversibile.');
-         * * if (confirmed) {
-         * const department = problemData[departmentKey];
-         * if (department) {
-         * const initialLength = department.rows.length;
-         * department.rows = department.rows.filter(row => row.id !== rowId);
-         * * if (department.rows.length < initialLength) {
-         * saveData();
-         * switchDepartment(departmentKey); // Ricarica il reparto
-         * showTempMessage('Problema eliminato con successo.', 'success');
-         * } else {
-         * showTempMessage('Errore: Riga non trovata da eliminare.', 'error');
-         * }
-         * }
-         * }
-         * }
-         */
-
-        // --- Funzioni Modal (Aggiungi/Stampa) ---
-
-        function showAddModal() {
-            const modal = document.getElementById('add-modal');
-            const select = document.getElementById('new-problem-department');
-            
-            // Popola il selettore con le opzioni
-            select.innerHTML = '';
-            departmentKeys.forEach(key => {
-                const option = document.createElement('option');
-                option.value = key;
-                option.textContent = problemData[key].name;
-                select.appendChild(option);
-            });
-            // Imposta il reparto corrente come default
-            select.value = currentDepartment; 
-            
-            modal.classList.remove('hidden');
-        }
-
-        function closeAddModal() {
-            document.getElementById('add-modal').classList.add('hidden');
-            // Pulisci i campi
-            document.getElementById('new-problem').value = '';
-            document.getElementById('new-description').value = '';
-            document.getElementById('new-solution').value = '';
-        }
-
-        function showPrintModal() {
-            const modal = document.getElementById('print-modal');
-            document.getElementById('print-modal-department-name').textContent = problemData[currentDepartment].name;
-            modal.classList.remove('hidden');
-        }
-
-        function closePrintModal() {
-            document.getElementById('print-modal').classList.add('hidden');
-        }
-
-        /**
-         * Gestisce la stampa filtrando le colonne.
-         */
-        function handlePrint() {
-            const colsToDisplay = [
-                document.getElementById('print-col-0').checked, // Problema
-                document.getElementById('print-col-1').checked, // Descrizione
-                document.getElementById('print-col-2').checked  // Soluzione
-            ];
-
-            if (!colsToDisplay.some(c => c)) {
-                showTempMessage('Devi selezionare almeno una colonna da stampare!', 'error');
-                return;
-            }
-
-            closePrintModal();
-
-            // Rimuovi eventuali evidenziazioni di ricerca prima della stampa
-            document.getElementById('search-input').value = '';
-            document.getElementById('search-results-count').classList.add('opacity-0', 'hidden');
-            
-            // Imposta la classe di stampa sul body
-            document.body.classList.add('printing');
-
-            // Renderizza solo i dati del reparto corrente con le colonne selezionate
-            const currentData = problemData[currentDepartment];
-            if (currentData) {
-                 // Disabilita lo scroll/glow dopo il rendering in modalità stampa
-                lastScrollTargetId = null; 
-                renderDataList(currentData.rows, colsToDisplay, '', false); 
-            }
-            
-            // Forza il rendering delle icone di Lucide (per i titoli)
-            lucide.createIcons(); 
-
-            // Avvia la finestra di stampa
-            window.print();
-            
-            // Dopo la stampa o se annullata (necessario un timeout per Chrome/Firefox)
-            setTimeout(() => {
-                document.body.classList.remove('printing');
-                // Ricarica la vista normale dopo la stampa
-                switchDepartment(currentDepartment); 
-            }, 500);
-        }
-
-        // --- Inizializzazione ---
-        
-        /**
-         * Inizializza l'applicazione.
-         */
-        function init() {
-            loadData();
-            renderTabs();
-            // Imposta il primo reparto come attivo di default
-            if (departmentKeys.length > 0) {
-                switchDepartment(departmentKeys[0]);
-            }
-        }
-
-        // Avvia l'app
-        init();
-
-    </script>
+    <div class="field"><label>Orari dose (24h)</label></div>
+    <div id="times2-ui"></div>
+  </div>
+
+  <button class="btn-primary" onclick="startTreatment()">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    Inizia il trattamento
+  </button>
+</div>
+
+<!-- ══════════════════ TRACKER ══════════════════ -->
+<div id="tracker-sec" style="display:none">
+
+  <!-- Stats -->
+  <div class="stats-grid" id="stats-grid"></div>
+
+  <!-- Progress dual bar -->
+  <div class="prog-wrap" id="prog-wrap"></div>
+
+  <!-- Tab bar -->
+  <div class="tab-bar">
+    <div class="tab active" onclick="switchTab('calendario')" id="tab-cal">📅 Calendario</div>
+    <div class="tab" onclick="switchTab('riepilogo')" id="tab-sum">📊 Riepilogo</div>
+    <div class="tab" onclick="switchTab('impostazioni')" id="tab-set">⚙️ Impostazioni</div>
+  </div>
+
+  <!-- TAB: Calendario -->
+  <div id="view-calendario">
+    <div class="legend" id="legend"></div>
+    <div class="day-grid" id="day-grid"></div>
+    <div id="detail-wrap" style="display:none"></div>
+  </div>
+
+  <!-- TAB: Riepilogo -->
+  <div id="view-riepilogo" style="display:none">
+    <div class="card" id="summary-card"></div>
+  </div>
+
+  <!-- TAB: Impostazioni -->
+  <div id="view-impostazioni" style="display:none">
+    <div class="card">
+      <div class="card-title">⚙️ Opzioni</div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <button class="btn-sm" onclick="exportData()">📤 Esporta dati (JSON)</button>
+        <button class="btn-sm" onclick="printSummary()">🖨️ Stampa riepilogo</button>
+        <button class="btn-sm btn-danger" onclick="resetAll()">↺ Ricomincia da capo</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">Dati salvati nel browser · Diario Medicine</div>
+</div><!-- /tracker -->
+
+</div><!-- /wrap -->
+
+<!-- MODAL -->
+<div class="modal-bg" id="modal" style="display:none" onclick="closeModal(event)">
+  <div class="modal" id="modal-inner">
+    <h2 id="modal-title">Modifica orario</h2>
+    <div id="modal-body"></div>
+    <div class="modal-row" id="modal-btns"></div>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════ */
+const COLORS=['#2D7A4F','#1A5FA8','#9B3080','#C0392B','#B86E00','#0E7D7D','#5B4A00','#2C5282'];
+const CNAMES=['Verde','Blu','Viola','Rosso','Arancio','Teal','Marrone','Navy'];
+
+let S={
+  med1:'',med2:'',
+  startDate:'',days:14,
+  doses1:4,doses2:2,
+  times1:[],times2:[],
+  color1:'#2D7A4F',color2:'#1A5FA8',
+  log:{},   /* {dk: {m1:[{taken,time},...], m2:[...], notes:''}} */
+};
+
+function save(){try{localStorage.setItem('dmv5',JSON.stringify(S));}catch(e){}}
+function load(){try{const d=localStorage.getItem('dmv5');if(d){S=JSON.parse(d);return true;}}catch(e){}return false;}
+function pad(n){return String(n).padStart(2,'0');}
+function dateStr(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());}
+function addDays(base,n){const d=new Date(base+'T00:00:00');d.setDate(d.getDate()+n);return d;}
+function fmtShort(d){return d.toLocaleDateString('it-IT',{day:'numeric',month:'short'});}
+function fmtLong(d){return d.toLocaleDateString('it-IT',{weekday:'long',day:'numeric',month:'long'});}
+function today0(){const t=new Date();t.setHours(0,0,0,0);return t;}
+
+let selDay=null;
+let darkMode=false;
+let activeTab='calendario';
+
+/* ═══════════════════════════════════════════
+   SETUP UI
+═══════════════════════════════════════════ */
+const DFLT1=['08:00','12:00','16:00','20:00'];
+const DFLT2=['08:00','20:00'];
+const DFLT_ALL=['06:00','08:00','12:00','16:00','20:00','22:00'];
+
+function buildColorPicker(id,selColor,med){
+  const el=document.getElementById(id);
+  el.innerHTML='';
+  COLORS.forEach((c,i)=>{
+    const d=document.createElement('div');
+    d.className='color-pick'+(c===selColor?' sel':'');
+    d.style.background=c;
+    d.title=CNAMES[i];
+    d.onclick=()=>{
+      el.querySelectorAll('.color-pick').forEach(x=>x.classList.remove('sel'));
+      d.classList.add('sel');
+      if(med===1)S.color1=c; else S.color2=c;
+      applyColors();
+    };
+    el.appendChild(d);
+  });
+}
+
+function applyColors(){
+  document.documentElement.style.setProperty('--c1',S.color1);
+  document.documentElement.style.setProperty('--c2',S.color2);
+  // lighter bg/border derived simply
+  document.documentElement.style.setProperty('--c1bg',hexAlpha(S.color1,.12));
+  document.documentElement.style.setProperty('--c2bg',hexAlpha(S.color2,.12));
+  document.documentElement.style.setProperty('--c1b',hexAlpha(S.color1,.4));
+  document.documentElement.style.setProperty('--c2b',hexAlpha(S.color2,.4));
+}
+
+function hexAlpha(hex,a){
+  const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
+  return`rgba(${r},${g},${b},${a})`;
+}
+
+function updateTimesUI(med){
+  const n=parseInt(document.getElementById('s-d'+med).value);
+  const dflt=med===1?DFLT1:DFLT2;
+  const ui=document.getElementById('times'+med+'-ui');
+  const cols=Math.min(n,4);
+  ui.innerHTML=`<div style="display:grid;grid-template-columns:repeat(${cols},1fr);gap:8px;margin-bottom:6px;">`;
+  for(let i=0;i<n;i++){
+    const v=DFLT_ALL[i]||'08:00';
+    ui.innerHTML+=`<div class="field"><label>Dose ${i+1}</label><input type="time" id="t${med}_${i}" value="${v}"></div>`;
+  }
+  ui.innerHTML+='</div>';
+  // update badge
+  document.getElementById('s-b'+med).textContent=n+'× / giorno';
+}
+
+/* ═══════════════════════════════════════════
+   START TREATMENT
+═══════════════════════════════════════════ */
+function startTreatment(){
+  const n1=document.getElementById('s-m1').value.trim();
+  const n2=document.getElementById('s-m2').value.trim();
+  const sd=document.getElementById('s-start').value;
+  const ndays=parseInt(document.getElementById('s-days').value)||14;
+  if(!n1||!n2||!sd){alert('Inserisci i nomi delle medicine e la data di inizio.');return;}
+  const d1=parseInt(document.getElementById('s-d1').value);
+  const d2=parseInt(document.getElementById('s-d2').value);
+  S.med1=n1;S.med2=n2;S.startDate=sd;S.days=ndays;
+  S.doses1=d1;S.doses2=d2;
+  S.times1=Array.from({length:d1},(_,i)=>document.getElementById('t1_'+i)?.value||DFLT_ALL[i]);
+  S.times2=Array.from({length:d2},(_,i)=>document.getElementById('t2_'+i)?.value||DFLT_ALL[i]);
+  S.log={};
+  // init log structure
+  for(let i=0;i<ndays;i++){
+    const dk=dateStr(addDays(sd,i));
+    S.log[dk]={
+      m1:Array.from({length:d1},(_,j)=>({taken:false,time:S.times1[j]})),
+      m2:Array.from({length:d2},(_,j)=>({taken:false,time:S.times2[j]})),
+      notes:''
+    };
+  }
+  save();renderAll();
+}
+
+function getDay(dk){
+  if(!S.log[dk]){
+    S.log[dk]={
+      m1:Array.from({length:S.doses1},(_,j)=>({taken:false,time:S.times1[j]})),
+      m2:Array.from({length:S.doses2},(_,j)=>({taken:false,time:S.times2[j]})),
+      notes:''
+    };
+  }
+  return S.log[dk];
+}
+
+/* ═══════════════════════════════════════════
+   DARK MODE
+═══════════════════════════════════════════ */
+function toggleDark(){
+  darkMode=!darkMode;
+  document.documentElement.toggleAttribute('data-dark',darkMode);
+  document.querySelector('.icon-btn').textContent=darkMode?'☀️':'🌙';
+}
+
+/* ═══════════════════════════════════════════
+   TABS
+═══════════════════════════════════════════ */
+function switchTab(name){
+  activeTab=name;
+  ['calendario','riepilogo','impostazioni'].forEach(t=>{
+    document.getElementById('view-'+t).style.display=t===name?'block':'none';
+    document.getElementById('tab-'+t.slice(0,3==='cal'?3:3)).classList.toggle('active',false);
+  });
+  document.getElementById('tab-cal').classList.toggle('active',name==='calendario');
+  document.getElementById('tab-sum').classList.toggle('active',name==='riepilogo');
+  document.getElementById('tab-set').classList.toggle('active',name==='impostazioni');
+  if(name==='riepilogo')renderSummary();
+}
+
+/* ═══════════════════════════════════════════
+   STATS
+═══════════════════════════════════════════ */
+function getTotals(){
+  let t1=0,t2=0,d1=0,d2=0,streak=0,notLogged=0;
+  const tod=today0();
+  let inStreak=true;
+  for(let i=S.days-1;i>=0;i--){
+    const d=addDays(S.startDate,i);
+    const dk=dateStr(d);
+    const day=getDay(dk);
+    const tk1=day.m1.filter(x=>x.taken).length;
+    const tk2=day.m2.filter(x=>x.taken).length;
+    t1+=tk1;t2+=tk2;
+    d1+=S.doses1;d2+=S.doses2;
+    if(d<tod&&(tk1+tk2)<(S.doses1+S.doses2))notLogged++;
+    if(inStreak&&d<=tod){
+      if(tk1+tk2===S.doses1+S.doses2)streak++;
+      else if(d<tod)inStreak=false;
+    }
+  }
+  return{t1,t2,d1,d2,total:d1+d2,taken:t1+t2,notLogged,streak};
+}
+
+function renderStats(){
+  const{t1,t2,total,taken,notLogged,streak}=getTotals();
+  const pct=total?Math.round(taken/total*100):0;
+  document.getElementById('stats-grid').innerHTML=`
+    <div class="stat"><div class="stat-val">${taken}</div><div class="stat-lbl">Prese</div></div>
+    <div class="stat"><div class="stat-val">${total-taken}</div><div class="stat-lbl">Rimanenti</div></div>
+    <div class="stat"><div class="stat-val">${pct}%</div><div class="stat-lbl">Completato</div></div>
+    <div class="stat"><div class="streak-fire">${streak>0?'🔥':''}</div><div class="stat-val">${streak}</div><div class="stat-lbl">Giorni fila</div></div>`;
+}
+
+function renderProgress(){
+  const{t1,t2,d1,d2}=getTotals();
+  const pct1=d1?Math.round(t1/d1*100):0;
+  const pct2=d2?Math.round(t2/d2*100):0;
+  document.getElementById('prog-wrap').innerHTML=`
+    <div class="prog-bg">
+      <div style="height:100%;width:${pct1*(d1/(d1+d2))}%;background:var(--c1);border-radius:10px 0 0 10px;transition:width .4s;"></div>
+      <div style="height:100%;width:${pct2*(d2/(d1+d2))}%;background:var(--c2);border-radius:0 10px 10px 0;transition:width .4s;"></div>
+    </div>
+    <div class="prog-lbl">
+      <span style="color:var(--c1)">${S.med1}: ${t1}/${d1} (${pct1}%)</span>
+      <span style="color:var(--c2)">${S.med2}: ${t2}/${d2} (${pct2}%)</span>
+    </div>`;
+}
+
+function renderLegend(){
+  document.getElementById('legend').innerHTML=`
+    <div class="leg-item"><div class="leg-dot" style="background:var(--c1)"></div><span>${S.med1}</span></div>
+    <div class="leg-item"><div class="leg-dot" style="background:var(--c2)"></div><span>${S.med2}</span></div>
+    <div class="leg-item"><div class="leg-sq" style="background:var(--c1bg);border:1px solid var(--c1b)"></div>Completo</div>
+    <div class="leg-item"><div class="leg-sq" style="background:var(--amberbg);border:1px solid var(--amberb)"></div>Parziale</div>
+    <div class="leg-item"><div class="leg-sq" style="background:var(--redbg);border:1px solid var(--redb)"></div>Non registrato</div>
+    <button class="btn-sm" style="margin-left:auto" onclick="switchTab('impostazioni')">⚙️</button>`;
+}
+
+/* ═══════════════════════════════════════════
+   DAY GRID
+═══════════════════════════════════════════ */
+function renderGrid(){
+  const tod=today0();
+  let html='';
+  for(let i=0;i<S.days;i++){
+    const d=addDays(S.startDate,i);const dk=dateStr(d);
+    const day=getDay(dk);
+    const tk1=day.m1.filter(x=>x.taken).length;
+    const tk2=day.m2.filter(x=>x.taken).length;
+    const tot=tk1+tk2;const max=S.doses1+S.doses2;
+    const isToday=dateStr(d)===dateStr(tod);
+    const isPast=d<tod;
+    let cls='day-card';
+    if(isToday)cls+=' dc-today';
+    else if(isPast&&tot===max)cls+=' dc-complete';
+    else if(isPast&&tot>0)cls+=' dc-partial';
+    else if(isPast&&tot===0)cls+=' dc-unlogged';
+    if(selDay===dk)cls+=' dc-sel';
+    // pips: med1 first (color1), then med2 (color2)
+    let pips='';
+    for(let j=0;j<S.doses1;j++){
+      const c=day.m1[j]?.taken?`style="background:${S.color1}"`:'';
+      pips+=`<div class="pip" ${c}></div>`;
+    }
+    for(let j=0;j<S.doses2;j++){
+      const c=day.m2[j]?.taken?`style="background:${S.color2}"`:'';
+      pips+=`<div class="pip" ${c}></div>`;
+    }
+    html+=`<div class="${cls}" onclick="selectDay('${dk}')">
+      <div class="dc-num">G${i+1}</div>
+      <div class="dc-date">${fmtShort(d)}</div>
+      <div class="dc-pips">${pips}</div>
+    </div>`;
+  }
+  document.getElementById('day-grid').innerHTML=html;
+}
+
+/* ═══════════════════════════════════════════
+   SELECT DAY / DETAIL
+═══════════════════════════════════════════ */
+function selectDay(dk){
+  selDay=dk;renderGrid();renderDetail(dk);
+  setTimeout(()=>{const el=document.getElementById('detail-wrap');if(el)el.scrollIntoView({behavior:'smooth',block:'nearest'});},60);
+}
+
+function renderDetail(dk){
+  const wrap=document.getElementById('detail-wrap');
+  wrap.style.display='block';
+  const d=new Date(dk+'T00:00:00');
+  const tod=today0();
+  const idx=Math.round((d-new Date(S.startDate+'T00:00:00'))/86400000)+1;
+  const day=getDay(dk);
+  const isPast=d<tod,isFuture=d>tod,isToday=dateStr(d)===dateStr(tod);
+  const tk1=day.m1.filter(x=>x.taken).length;
+  const tk2=day.m2.filter(x=>x.taken).length;
+
+  let notice='';
+  if(isPast&&tk1+tk2<S.doses1+S.doses2)
+    notice=`<div class="notice n-amber">⚠ Giorno passato — puoi registrare retroattivamente le dosi prese.</div>`;
+  else if(isFuture)
+    notice=`<div class="notice n-blue">📅 Giorno futuro — puoi pre-registrare o tornare in seguito.</div>`;
+  else if(tk1+tk2===S.doses1+S.doses2)
+    notice=`<div class="notice n-green">✅ Tutte le dosi di oggi registrate!</div>`;
+
+  // med1 dose cards
+  let cards1='';
+  day.m1.forEach((dose,i)=>{
+    const cls=dose.taken?'dose-card tk1':'dose-card';
+    cards1+=`<div class="${cls}">
+      <div class="dose-top" onclick="toggleDose('${dk}','m1',${i})">
+        <div class="dose-time">${dose.time}</div>
+        <div class="dose-lbl">${dose.taken?'✓ presa':'tocca per registrare'}</div>
+      </div>
+      <div class="dose-actions">
+        <button class="dose-act edit" onclick="editDoseTime('${dk}','m1',${i},'${dose.time}')">✏️ orario</button>
+        <button class="dose-act del" onclick="deleteDose('${dk}','m1',${i})">🗑</button>
+      </div>
+    </div>`;
+  });
+
+  // med2 dose cards
+  let cards2='';
+  day.m2.forEach((dose,i)=>{
+    const cls=dose.taken?'dose-card tk2':'dose-card';
+    cards2+=`<div class="${cls}">
+      <div class="dose-top" onclick="toggleDose('${dk}','m2',${i})">
+        <div class="dose-time">${dose.time}</div>
+        <div class="dose-lbl">${dose.taken?'✓ presa':'tocca per registrare'}</div>
+      </div>
+      <div class="dose-actions">
+        <button class="dose-act edit" onclick="editDoseTime('${dk}','m2',${i},'${dose.time}')">✏️ orario</button>
+        <button class="dose-act del" onclick="deleteDose('${dk}','m2',${i})">🗑</button>
+      </div>
+    </div>`;
+  });
+
+  wrap.innerHTML=`<div class="detail-card">
+    <div class="det-title">Giorno ${idx} — ${fmtLong(d)}</div>
+    <div class="det-sub">${isToday?'Oggi':isPast?'Giorno passato':'Prossimamente'} &nbsp;·&nbsp; ${tk1+tk2}/${S.doses1+S.doses2} dosi registrate</div>
+    ${notice}
+    <div class="med-sec">
+      <div class="med-sec-hdr">
+        <div class="med-color-bar" style="background:${S.color1}"></div>
+        <h3>${S.med1} · ${S.doses1}× al giorno · ${tk1}/${S.doses1} registrate</h3>
+      </div>
+      <div class="dose-grid">${cards1}</div>
+    </div>
+    <div class="med-sec">
+      <div class="med-sec-hdr">
+        <div class="med-color-bar" style="background:${S.color2}"></div>
+        <h3>${S.med2} · ${S.doses2}× al giorno · ${tk2}/${S.doses2} registrate</h3>
+      </div>
+      <div class="dose-grid">${cards2}</div>
+    </div>
+    <div class="med-sec" style="margin-top:16px">
+      <div class="med-sec-hdr"><h3 style="color:var(--t3)">📝 Note del giorno</h3></div>
+      <textarea class="notes-area" id="notes-${dk}" placeholder="Effetti collaterali, note, ecc…" oninput="saveNote('${dk}')">${day.notes||''}</textarea>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
+      <button class="btn-sm" onclick="markAllDay('${dk}',true)">✅ Segna tutto preso</button>
+      <button class="btn-sm btn-danger" onclick="markAllDay('${dk}',false)">🗑 Cancella giorno</button>
+    </div>
+  </div>`;
+}
+
+/* ═══════════════════════════════════════════
+   DOSE ACTIONS
+═══════════════════════════════════════════ */
+function toggleDose(dk,med,idx){
+  const day=getDay(dk);
+  day[med][idx].taken=!day[med][idx].taken;
+  save();renderStats();renderProgress();renderGrid();renderDetail(dk);
+}
+
+function deleteDose(dk,med,idx){
+  const day=getDay(dk);
+  day[med][idx].taken=false;
+  day[med][idx].time=S['times'+med.slice(1)][idx]||'08:00';
+  save();renderStats();renderProgress();renderGrid();renderDetail(dk);
+}
+
+function markAllDay(dk,val){
+  const day=getDay(dk);
+  day.m1.forEach(d=>d.taken=val);
+  day.m2.forEach(d=>d.taken=val);
+  save();renderStats();renderProgress();renderGrid();renderDetail(dk);
+}
+
+function saveNote(dk){
+  const el=document.getElementById('notes-'+dk);
+  if(!el)return;
+  getDay(dk).notes=el.value;
+  save();
+}
+
+/* ═══════════════════════════════════════════
+   EDIT TIME MODAL
+═══════════════════════════════════════════ */
+function editDoseTime(dk,med,idx,current){
+  const medName=med==='m1'?S.med1:S.med2;
+  openModal(
+    `Modifica orario — ${medName} Dose ${idx+1}`,
+    `<div class="field"><label>Nuovo orario (24h)</label><input type="time" id="modal-time" value="${current}"></div>
+     <p style="font-size:12px;color:var(--t3);font-family:'DM Mono',monospace;margin-top:6px;">Solo per questo giorno. Modifica le impostazioni generali dal pannello ⚙️.</p>`,
+    [
+      {lbl:'Annulla',cls:'btn-sm',fn:'closeModal()'},
+      {lbl:'Salva',cls:'btn-primary',fn:`saveDoseTime('${dk}','${med}',${idx})`},
+    ]
+  );
+}
+
+function saveDoseTime(dk,med,idx){
+  const t=document.getElementById('modal-time')?.value;
+  if(!t)return;
+  getDay(dk)[med][idx].time=t;
+  save();closeModal();renderDetail(dk);
+}
+
+/* ═══════════════════════════════════════════
+   MODAL HELPERS
+═══════════════════════════════════════════ */
+function openModal(title,body,btns){
+  document.getElementById('modal-title').textContent=title;
+  document.getElementById('modal-body').innerHTML=body;
+  const br=document.getElementById('modal-btns');
+  br.innerHTML='';
+  btns.forEach(b=>{
+    const el=document.createElement('button');
+    el.className=b.cls;el.textContent=b.lbl;
+    el.style.flex='1';
+    el.onclick=()=>eval(b.fn);
+    br.appendChild(el);
+  });
+  document.getElementById('modal').style.display='flex';
+}
+function closeModal(e){
+  if(e&&e.target!==document.getElementById('modal'))return;
+  document.getElementById('modal').style.display='none';
+}
+
+/* ═══════════════════════════════════════════
+   SUMMARY TAB
+═══════════════════════════════════════════ */
+function renderSummary(){
+  const tod=today0();
+  let rows='';
+  for(let i=0;i<S.days;i++){
+    const d=addDays(S.startDate,i);const dk=dateStr(d);
+    const day=getDay(dk);
+    const tk1=day.m1.filter(x=>x.taken).length;
+    const tk2=day.m2.filter(x=>x.taken).length;
+    const isPast=d<tod,isToday=dateStr(d)===dateStr(tod);
+    const icon=tk1+tk2===S.doses1+S.doses2?'✅':isPast?'⚠️':'·';
+    rows+=`<tr style="border-bottom:1px solid var(--border);">
+      <td style="padding:8px 6px;font-family:'DM Mono',monospace;font-size:12px;color:var(--t3);">G${i+1}</td>
+      <td style="padding:8px 6px;font-size:13px;">${fmtShort(d)}${isToday?' <b>(oggi)</b>':''}</td>
+      <td style="padding:8px 6px;text-align:center;font-size:13px;color:var(--c1);">${tk1}/${S.doses1}</td>
+      <td style="padding:8px 6px;text-align:center;font-size:13px;color:var(--c2);">${tk2}/${S.doses2}</td>
+      <td style="padding:8px 6px;text-align:center;">${icon}</td>
+      <td style="padding:8px 6px;font-size:11px;color:var(--t3);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${day.notes||''}</td>
+    </tr>`;
+  }
+  document.getElementById('summary-card').innerHTML=`
+    <div class="card-title">📊 Riepilogo trattamento</div>
+    <div style="overflow-x:auto;">
+    <table style="width:100%;border-collapse:collapse;font-size:13px;">
+      <thead><tr style="border-bottom:2px solid var(--border);">
+        <th style="padding:6px;text-align:left;font-size:11px;color:var(--t3);font-family:'DM Mono',monospace;">G</th>
+        <th style="padding:6px;text-align:left;font-size:11px;color:var(--t3);">Data</th>
+        <th style="padding:6px;text-align:center;font-size:11px;color:var(--c1);">${S.med1.split(' ')[0]}</th>
+        <th style="padding:6px;text-align:center;font-size:11px;color:var(--c2);">${S.med2.split(' ')[0]}</th>
+        <th style="padding:6px;text-align:center;font-size:11px;color:var(--t3);">Stato</th>
+        <th style="padding:6px;text-align:left;font-size:11px;color:var(--t3);">Note</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table></div>`;
+}
+
+/* ═══════════════════════════════════════════
+   EXPORT / PRINT
+═══════════════════════════════════════════ */
+function exportData(){
+  const json=JSON.stringify(S,null,2);
+  const blob=new Blob([json],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='diario-medicine.json';
+  a.click();
+}
+
+function printSummary(){
+  window.print();
+}
+
+/* ═══════════════════════════════════════════
+   RESET
+═══════════════════════════════════════════ */
+function resetAll(){
+  if(!confirm('Sei sicuro? Tutti i dati verranno cancellati.'))return;
+  localStorage.removeItem('dmv5');
+  location.reload();
+}
+
+/* ═══════════════════════════════════════════
+   RENDER ALL
+═══════════════════════════════════════════ */
+function renderAll(){
+  document.getElementById('setup-sec').style.display='none';
+  document.getElementById('tracker-sec').style.display='block';
+  applyColors();
+  const sd=new Date(S.startDate+'T00:00:00');
+  const ed=addDays(S.startDate,S.days-1);
+  document.getElementById('hdr-sub').textContent=`${fmtShort(sd)} – ${fmtShort(ed)} (${S.days} giorni)`;
+  document.getElementById('hbadge').textContent='Attivo';
+  renderStats();renderProgress();renderLegend();
+  const tod=today0();
+  const sd2=new Date(S.startDate+'T00:00:00');
+  const ed2=addDays(S.startDate,S.days-1);
+  selDay=(tod>=sd2&&tod<=ed2)?dateStr(tod):S.startDate;
+  renderGrid();renderDetail(selDay);
+}
+
+/* ═══════════════════════════════════════════
+   INIT
+═══════════════════════════════════════════ */
+(function(){
+  // Default start = today
+  document.getElementById('s-start').value=dateStr(new Date());
+  // Build color pickers
+  buildColorPicker('cr1',S.color1,1);
+  buildColorPicker('cr2',S.color2,2);
+  // Build time inputs
+  updateTimesUI(1);updateTimesUI(2);
+  // Wire dose count changes
+  document.getElementById('s-d1').addEventListener('change',()=>updateTimesUI(1));
+  document.getElementById('s-d2').addEventListener('change',()=>updateTimesUI(2));
+  // Load saved state
+  if(load()&&S.med1&&S.med2&&S.startDate){
+    applyColors();
+    renderAll();
+  }
+})();
+</script>
 </body>
 </html>
